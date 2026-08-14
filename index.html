@@ -1,1 +1,671 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sony Stream Cam Guide</title>
 
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;600;700;800&display=swap");
+
+    :root {
+      --bg: #07090d;
+      --panel: #111722;
+      --text: #f7f8fb;
+      --muted: #98a3b7;
+      --line: rgba(255,255,255,.12);
+      --lime: #cbff53;
+      --blue: #78a7ff;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Manrope, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed;
+      z-index: 10;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1120px, calc(100% - 32px));
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(9, 12, 18, .8);
+      backdrop-filter: blur(15px);
+    }
+
+    .brand {
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand i {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+    }
+
+    .brand small {
+      color: var(--muted);
+      font: 10px "DM Mono";
+    }
+
+    .topnav {
+      display: flex;
+      gap: 4px;
+    }
+
+    .topnav button {
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: transparent;
+      color: var(--muted);
+      font: 600 12px Manrope;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .topnav button:hover {
+      color: var(--lime);
+      background: #1b2230;
+    }
+
+    #counter {
+      color: var(--muted);
+      font: 11px "DM Mono";
+      white-space: nowrap;
+    }
+
+    .page {
+      display: none;
+      min-height: 100vh;
+      padding: 135px max(8vw, 28px) 70px;
+    }
+
+    .page.active {
+      display: block;
+      animation: enter .65s ease both;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(28px) scale(.99); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .eyebrow {
+      color: var(--lime);
+      font: 12px "DM Mono";
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      min-height: calc(100vh - 135px);
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 18px 0;
+      font-size: clamp(3.4rem, 7vw, 7.5rem);
+      line-height: .94;
+      letter-spacing: -.07em;
+    }
+
+    h1 em { color: var(--lime); font-style: normal; }
+
+    h2 {
+      margin: 12px 0;
+      font-size: clamp(2.5rem, 5vw, 4.7rem);
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    h3 {
+      margin: 12px 0;
+      font-size: 28px;
+      letter-spacing: -.04em;
+    }
+
+    .lead, p {
+      max-width: 650px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 15px 20px;
+      background: var(--lime);
+      color: #101217;
+      font: 700 14px Manrope;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(203,255,83,.18);
+    }
+
+    .ghost {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+    }
+
+    .camera {
+      position: relative;
+      min-height: 430px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: radial-gradient(circle at 62% 35%, #26344c, transparent 34%), #111722;
+    }
+
+    .camera-ring {
+      position: absolute;
+      top: 50%;
+      left: 56%;
+      width: 260px;
+      height: 260px;
+      transform: translate(-50%, -50%);
+      border: 38px solid #202c3d;
+      border-radius: 50%;
+      box-shadow: 0 0 0 18px #090d14, 0 0 0 20px #46536a;
+    }
+
+    .lens {
+      position: absolute;
+      top: 50%;
+      left: 56%;
+      width: 145px;
+      height: 145px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle at 38% 34%, #8cd0ff 0 3%, #153253 17%, #07111d 48%, #000 65%);
+      box-shadow: 0 0 50px #357db955;
+    }
+
+    .camera-label {
+      position: absolute;
+      bottom: 25px;
+      left: 25px;
+      color: #c9d4e7;
+      font: 12px "DM Mono";
+    }
+
+    .camera-label b {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--lime);
+      font-size: 10px;
+    }
+
+    .intro, .grid, .tutorial, .kit, .footerline {
+      max-width: 1120px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .intro { margin-bottom: 46px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      min-height: 190px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(145deg, #151a25, #0d1119);
+      transition: .3s;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(203,255,83,.5);
+    }
+
+    .num {
+      color: var(--lime);
+      font: 12px "DM Mono";
+    }
+
+    .card h3 { margin-top: 32px; font-size: 20px; }
+
+    .tutorial {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 55px;
+    }
+
+    .steps {
+      position: sticky;
+      top: 105px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: max-content;
+    }
+
+    .step {
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 15px;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      font: 600 14px Manrope;
+      cursor: pointer;
+    }
+
+    .step:hover, .step.on {
+      color: white;
+      background: #181e2a;
+    }
+
+    .step span {
+      display: inline-grid;
+      width: 23px;
+      height: 23px;
+      margin-right: 10px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      font: 11px "DM Mono";
+    }
+
+    .step.on span {
+      background: var(--lime);
+      color: #101217;
+    }
+
+    .detail {
+      padding-left: 45px;
+      border-left: 1px solid var(--line);
+    }
+
+    article {
+      min-height: 310px;
+      padding-bottom: 55px;
+      scroll-margin-top: 120px;
+    }
+
+    .setting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 10px;
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #131925;
+    }
+
+    .setting small { color: var(--muted); }
+
+    code {
+      color: var(--lime);
+      font: 12px "DM Mono";
+      white-space: nowrap;
+    }
+
+    .note {
+      margin-top: 20px;
+      padding: 13px 16px;
+      border-left: 2px solid var(--blue);
+      background: rgba(120,167,255,.08);
+      color: #d4e0ff;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .kit {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .check {
+      display: flex;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tick { color: var(--lime); font-weight: 800; }
+
+    .footerline {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 65px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 11px "DM Mono";
+    }
+
+    .pager {
+      position: fixed;
+      z-index: 10;
+      right: 26px;
+      bottom: 25px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border: 1px solid #9eabc1;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .dot.on {
+      border-color: var(--lime);
+      background: var(--lime);
+    }
+
+    @media (max-width: 760px) {
+      nav { top: 12px; }
+      .topnav, #counter, .brand small { display: none; }
+      .page { padding: 105px 24px 50px; }
+      .hero, .grid, .kit, .tutorial { grid-template-columns: 1fr; }
+      .camera { min-height: 290px; }
+      .steps {
+        position: static;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      .step { white-space: nowrap; }
+      .detail {
+        padding-left: 0;
+        border-left: 0;
+      }
+      article { min-height: 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="brand">
+      <i></i>SONY / STREAM GUIDE <small>by Pumaintegral</small>
+    </div>
+
+    <div class="topnav">
+      <button onclick="go(0)">Start</button>
+      <button onclick="go(1)">Setup</button>
+      <button onclick="go(2)">Einstellungen</button>
+      <button onclick="go(3)">Check</button>
+    </div>
+
+    <div id="counter">01 — START</div>
+  </nav>
+
+  <main>
+    <section class="page active">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Tutorial · 2026</div>
+          <h1>Deine Sony.<br><em>Dein Stream.</em><br>In Scharf.</h1>
+          <p class="lead">
+            Vom ersten Kabel bis zum cineastischen Look: Dieser Guide macht
+            deine Sony-Kamera zur professionellen Stream-Cam.
+          </p>
+
+          <div class="actions">
+            <button class="btn" onclick="go(1)">Tutorial starten →</button>
+            <button class="btn ghost" onclick="go(2)">Einstellungen ansehen</button>
+          </div>
+        </div>
+
+        <div class="camera">
+          <div class="camera-ring"></div>
+          <div class="lens"></div>
+          <div class="camera-label">
+            <b>LIVE SETUP</b>
+            SONY α SERIES<br>
+            4K SENSOR / CLEAN HDMI
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="intro">
+        <div class="eyebrow">01 / Das brauchst du</div>
+        <h2>Das kleine Setup.<br>Der große Unterschied.</h2>
+        <p class="lead">
+          Besonders geeignet sind Sony α6400, ZV-E10, α7 III/IV und ZV-1.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="num">01 — KAMERA</div>
+          <h3>Sony mit HDMI</h3>
+          <p>Eine Sony-Kamera mit cleanem HDMI-Ausgang oder USB-Streaming.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">02 — CAPTURE</div>
+          <h3>Capture Card</h3>
+          <p>Zum Beispiel eine Elgato Cam Link 4K: HDMI von der Kamera zu USB am PC.</p>
+        </div>
+
+        <div class="card">
+          <div class="num">03 — LICHT + STROM</div>
+          <h3>Konstantes Licht</h3>
+          <p>Weiches Licht und ein Dummy-Akku sorgen für ein besseres und stabiles Bild.</p>
+        </div>
+      </div>
+
+      <div class="actions" style="max-width:1120px;margin:35px auto">
+        <button class="btn" onclick="go(2)">Zu den Einstellungen →</button>
+      </div>
+
+      <div class="footerline">
+        <span>SONY STREAM CAM / BY PUMAINTEGRAL</span>
+        <span>WEITER →</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="intro">
+        <div class="eyebrow">02 / Kamera einrichten</div>
+        <h2>Die richtigen<br>Einstellungen.</h2>
+        <p class="lead">
+          Klicke links auf einen Punkt. Die Menübezeichnungen können je nach Sony-Modell etwas abweichen.
+        </p>
+      </div>
+
+      <div class="tutorial">
+        <aside class="steps">
+          <button class="step on" data-target="video"><span>1</span>Video-Modus</button>
+          <button class="step" data-target="focus"><span>2</span>Autofokus</button>
+          <button class="step" data-target="exposure"><span>3</span>Belichtung</button>
+          <button class="step" data-target="hdmi"><span>4</span>HDMI-Ausgabe</button>
+        </aside>
+
+        <div class="detail">
+          <article id="video">
+            <div class="eyebrow">Schritt 01 · Menü → Aufnahme</div>
+            <h3>Video-Modus einstellen.</h3>
+            <p>
+              Drehe das Modusrad auf <b>Film</b>. Drücke <b>MENU</b> →
+              <b>Aufnahme</b> → <b>Dateiformat</b>.
+            </p>
+
+            <div class="setting"><small>Dateiformat</small><code>XAVC S HD</code></div>
+            <div class="setting"><small>Aufnahmeeinstellung</small><code>50p 50M oder 25p 50M</code></div>
+            <div class="setting"><small>Für 4K-Capture-Card</small><code>XAVC S 4K · 25p</code></div>
+          </article>
+
+          <article id="focus">
+            <div class="eyebrow">Schritt 02 · Menü → Fokus</div>
+            <h3>Gesicht immer scharf.</h3>
+            <p>
+              Drücke <b>MENU</b> → <b>Fokus</b> → <b>Fokusmodus</b>.
+              Wähle AF-C und aktiviere Gesichts-/Augen-AF.
+            </p>
+
+            <div class="setting"><small>Fokusmodus</small><code>AF-C</code></div>
+            <div class="setting"><small>Motiverkennung</small><code>Mensch</code></div>
+            <div class="setting"><small>Gesicht/Auge Priorität</small><code>Ein</code></div>
+          </article>
+
+          <article id="exposure">
+            <div class="eyebrow">Schritt 03 · Menü → Belichtung</div>
+            <h3>Natürlich statt flackernd.</h3>
+            <p>
+              Stelle das Modusrad auf <b>M</b>. Zuerst Verschlusszeit,
+              danach Blende und zuletzt ISO einstellen.
+            </p>
+
+            <div class="setting"><small>Belichtungsmodus</small><code>M · Manuell</code></div>
+            <div class="setting"><small>Verschlusszeit bei 25p / 50p</small><code>1/50 s / 1/100 s</code></div>
+            <div class="setting"><small>Blende</small><code>f/2.8–f/4</code></div>
+            <div class="setting"><small>ISO</small><code>100–800, nicht automatisch</code></div>
+            <div class="setting"><small>Weißabgleich</small><code>5.600 K bei Tageslicht</code></div>
+
+            <div class="note">
+              Bei warmem Kunstlicht funktionieren meistens 3.200–4.000 K besser.
+            </div>
+          </article>
+
+          <article id="hdmi">
+            <div class="eyebrow">Schritt 04 · Menü → Setup</div>
+            <h3>Clean HDMI aktivieren.</h3>
+            <p>
+              Drücke <b>MENU</b> → <b>Setup</b> → <b>HDMI-Einstellungen</b>.
+              Danach die Kamera mit der Capture Card verbinden.
+            </p>
+
+            <div class="setting"><small>HDMI-Infoanzeige</small><code>Aus</code></div>
+            <div class="setting"><small>HDMI-Auflösung</small><code>1080p oder 2160p</code></div>
+            <div class="setting"><small>Automatische Abschaltung</small><code>Hoch / Aus</code></div>
+            <div class="setting"><small>OBS Quelle</small><code>Videoaufnahmegerät → Capture Card</code></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="footerline">
+        <span>SONY STREAM CAM / BY PUMAINTEGRAL</span>
+        <span>2026</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="intro">
+        <div class="eyebrow">03 / Bereit für Live</div>
+        <h2>Dein Pre-Stream<br>Check.</h2>
+      </div>
+
+      <div class="kit">
+        <div class="card">
+          <div class="num">KAMERA</div>
+          <div class="check"><span class="tick">✓</span><span>Dummy-Akku oder geladener Akku</span></div>
+          <div class="check"><span class="tick">✓</span><span>Objektiv sauber und Kamera auf Augenhöhe</span></div>
+          <div class="check"><span class="tick">✓</span><span>Display-Info im HDMI-Menü deaktiviert</span></div>
+        </div>
+
+        <div class="card">
+          <div class="num">STREAM SOFTWARE</div>
+          <div class="check"><span class="tick">✓</span><span>Capture Card als Videoquelle in OBS wählen</span></div>
+          <div class="check"><span class="tick">✓</span><span>Canvas auf 1920 × 1080 einstellen</span></div>
+          <div class="check"><span class="tick">✓</span><span>Testaufnahme: Fokus, Ton und Licht prüfen</span></div>
+        </div>
+      </div>
+
+      <div class="actions" style="max-width:1120px;margin:35px auto">
+        <button class="btn" onclick="go(0)">↺ Von vorne beginnen</button>
+      </div>
+
+      <div class="footerline">
+        <span>DEIN BILD IST JETZT LIVE.</span>
+        <span>SONY / STREAM GUIDE</span>
+      </div>
+    </section>
+  </main>
+
+  <div class="pager">
+    <i class="dot on" onclick="go(0)"></i>
+    <i class="dot" onclick="go(1)"></i>
+    <i class="dot" onclick="go(2)"></i>
+    <i class="dot" onclick="go(3)"></i>
+  </div>
+
+  <script>
+    const pages = [...document.querySelectorAll(".page")];
+    const dots = [...document.querySelectorAll(".dot")];
+    const names = ["START", "SETUP", "EINSTELLUNGEN", "CHECKLISTE"];
+
+    function go(number) {
+      pages.forEach((page, index) => {
+        page.classList.toggle("active", index === number);
+      });
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("on", index === number);
+      });
+
+      document.getElementById("counter").textContent =
+        `0${number + 1} — ${names[number]}`;
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".step").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".step").forEach(step => {
+          step.classList.remove("on");
+        });
+
+        button.classList.add("on");
+
+        document.getElementById(button.dataset.target).scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      });
+    });
+  </script>
+</body>
+</html>
